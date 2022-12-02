@@ -80,3 +80,22 @@ Creates a barrier between the above code to ensure it is finished?
 ```c
 #pragma omp barrier
 ```
+
+## Scheduling
+### Static Scheduling
+Breaks the work between all the threads before they are started (default setting
+```c
+#pragma omp ... schedule(static)
+```
+
+### Dynamic Scheduling
+Provides only one (by default) process to each thread, and once complete they request a new task.  This adds lots of communication overhead but allows processes to be scheduled very dynamically
+```c
+#pragma omp ... schedule(dynamic)
+```
+
+### Guided
+Sets a package size of n operations, where n is defined by OpenMP, and allocates each thread packages of n operations as they become available
+```c
+#pragma omp ... schedule(guided)
+```

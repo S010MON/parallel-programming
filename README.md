@@ -28,7 +28,6 @@ int a, b;
 #pragma omp parallel shared(a) private(b)
 {
 	int c;
-
 }
 
 ```

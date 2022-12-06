@@ -4,20 +4,22 @@ Breaks code into multiple threads
 ```c
 #pragma omp parallel
 {
-	...
+	// parallel code goes here
 }
 
 ```
 
 
-## Variables
+## Variable Scoping
+OpenMP has a *private-list* and *shared-list* in the Parallel Region. General default is shared for Parallel Region, firstprivate for Tasks
 
+### Private
 Set `x` as a variable that is shared between all threads within the block
 ```c
 int x;
 #pragma omp task shared(x)
 {
-	...
+	// parallel code goes here
 }
 ```
 
@@ -29,7 +31,34 @@ int a, b;
 {
 	int c;
 }
+```
 
+- Non-static variables local to Parallel Regions are private
+- Static variables are shared by default.
+- Loop control variables on for-constructs are private
+- `firstprivate` = Initialization with Master‘s value
+- `lastprivate` = Value of last loop iteration is written back to Master
+
+
+## The Barrier Construct
+Threads wait until all threads of the current Team have reached the barrier
+```c
+#pragma omp barrier
+```
+
+
+## Internal Control Variables
+The following variables are (some) of the variables available through OpenMP
+```c
+OMP_NUM_THREADS
+OMP_NUM_TEAMS
+```
+They can be accessed using standard getters:
+```c
+omp_get_thread_num();
+omp_get_num_threads();
+omp_get_num_teams();
+omp_get_wtime();
 ```
 
 ## Loop Parallelisation
@@ -65,19 +94,88 @@ for (int i=0; i<100; i++)
 }
 ```
 
+Possible reduction operations (with initialisation value):
+```
++ (0),
+* (1),
+- (0),
+& (~0),
+| (0),
+&& (1),
+|| (0),
+^ (0),
+min (least number),
+max (largest number)
+```
+
+## Syncronisation
+A Critical Region is executed by all threads, but by only one thread simultaneously (Mutual Exclusion).
+```c
+#pragma omp critical (name)
+{
+	... structured block ...
+}
+```
 
 ```c
 #pragma omp task wait
 ```
 
+## The Single Construct
+The single construct specifies that the enclosed structured block is executed by only on thread of the team.
 ```c
-#pragma omp single
+#pragma omp single[clause]
+... structured block ...
 ```
 
-
-Creates a barrier between the above code to ensure it is finished?
+## The Master Construct
+The master construct specifies that the enclosed structured block is executed only by the master thread of a team. Note: The master construct is no worksharing construct and does not contain an implicit barrier at the end.
 ```c
-#pragma omp barrier
+#pragma omp master[clause]
+... structured block ...
+```
+
+## The Sections Construct
+The sections construct contains a set of structured blocks that are to be distributed among and executed by the team of threads.
+```c
+#pragma omp sections [clause]
+{
+	#pragma omp section
+	... structured block ...
+	#pragma omp section
+	... structured block ...
+...
+}
+```
+Could be used for parallising multiple options (left/right branches of a binary tree)
+```c
+#pragma omp parallel sections
+{
+	#pragma omp section
+	if (tree->left) 
+		traverse(tree->left);
+	
+	#pragma omp section
+	if (tree->right)
+		traverse(tree->right);
+} // end omp parallel
+```
+
+## The Ordered Construct
+Allows a structured block to be executed within a parallel loop in sequential
+order. In addition, an `ordered` clause has to be added to the `for` construct which any
+ordered construct may occur (can be used to enfore order on printing data for example).  May also help to determine whether there is a data race.
+```c
+#pragma omp parallel for ordered
+for (i=0 ; i<10 ; i++)
+{
+	...
+	#pragma omp ordered
+	{
+		...
+	}
+	...
+}
 ```
 
 ## Scheduling
@@ -98,3 +196,6 @@ Sets a package size of n operations, where n is defined by OpenMP, and allocates
 ```c
 #pragma omp ... schedule(guided)
 ```
+
+
+

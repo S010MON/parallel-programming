@@ -32,6 +32,19 @@ int a, b;
 
 ```
 
+## Internal Control Variables
+The following variables are (some) of the variables available through OpenMP
+```c
+OMP_NUM_THREADS
+OMP_NUM_TEAMS
+```
+They can be accessed using standard getters:
+```c
+omp_get_thread_num();
+omp_get_num_threads();
+omp_get_num_teams();
+```
+
 ## Loop Parallelisation
 
 This code has no loop dependencies, so it is paralleliseable
@@ -98,3 +111,5 @@ Sets a package size of n operations, where n is defined by OpenMP, and allocates
 ```c
 #pragma omp ... schedule(guided)
 ```
+
+

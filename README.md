@@ -9,6 +9,10 @@ Breaks code into multiple threads
 
 ```
 
+```c
+#pragma omp single
+```
+
 
 ## Variables
 
@@ -67,19 +71,20 @@ for (int i=0; i<100; i++)
 ```
 
 
-```c
-#pragma omp task wait
-```
-
-```c
-#pragma omp single
-```
-
-
-Creates a barrier between the above code to ensure it is finished?
+### Barrier
+All tasks created by any thread of the current Team are guaranteed to be completed at barrier exit
 ```c
 #pragma omp barrier
 ```
+
+### Taskwait
+Encountering Task suspends until child tasks are complete. Only direct childs, not descendants!
+```c
+#pragma omp taskwait
+```
+
+
+
 
 ## Scheduling
 ### Static Scheduling

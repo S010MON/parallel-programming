@@ -26,18 +26,18 @@ int main(int argc, char* argv[])
 		{
 			MPI_Send(&message, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD);
 			printf("Ping:%i\n", message);
-			MPI_Recv(&message, 1, MPI_INT, 0, tagSend, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_Recv(&message, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
 	}
 	else if( procRank == 1)
 	{	
 		int r = -1;
-		while( r <= 3 )
+		while( r != 0 )
 		{
 			MPI_Recv(&r, 1, MPI_INT, 0, tagSend, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			r++;
 			printf("Pong:%i\n", r);
-			MPI_Send(&r, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD);
+			MPI_Send(&r, 1, MPI_INT, 0, tagSend, MPI_COMM_WORLD);
 		}
 	}	
 

@@ -221,8 +221,64 @@ int main(int argc, char* argv[])
 	return EXIT_SUCCESS;
 }
 ```
+## Data Types
+MPI Type     | C Type
+-------------|-----------------
+MPI_CHAR     | signed char
+MPI_INT      | signed int
+MPI_LONG     | signed long int
+MPI_UNSIGNED | unsigned int
+MPI_FLOAT    | float
+MPI_DOUBLE   | double
 
-## Process Handling
+## Predefined Communicators
+MPI communication always takes place within a communicator, a communicator a group is used to describe the participants in a communication "universe".  This is properly defined after `MPI_Init(...)` has been called
+```c
+MPI_COMM_WORLD //includes all of the started processes 
+
+MPI_COMM_SELF //includes only the process itself
+```
+
+### Size
+Number of processes within a group, can be determined using:
+```c
+int MPI_Comm_size(MPI_COMM_WORLD, &procCount);
+```
+
+### Rank
+Identifies processes within a group, can be determined using:
+```c
+int MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
+```
+
+## Point to Point Communication
+### Send
+```c
+int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+```
+- **buf**: starting address of the message
+- **count**: number of elements
+- **datatype**: type of each element
+- **dest**: rank of destination in communicator comm
+- **tag**: message identification
+- **comm**: communicator
+
+Example:
+```c
+MPI_Send(&message, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD);
+```
+
+### Recieve
+```c
+int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src , int tag, MPI_Comm comm, MPI_Status *status)
+```
+In addition `MPI_Recv` has:
+- **status**: envelope information (message information)
+```c
+MPI_Recv(message, length, MPI_INT, i, tagSend, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+```
+
+
 
 ## Message Handling
 

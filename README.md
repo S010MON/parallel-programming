@@ -215,7 +215,7 @@ int main(int argc, char* argv[])
 	int MPI_Init(&argc, &argv)
 	MPI_Comm_size(MPI_COMM_WORLD,&procCount);
 	
-	printf("Start[%d]/[%d]: Hello World\n",procRank,procCount
+	printf("Start[%d]/[%d]: Hello World\n",procRank,procCount);
 	
 	int MPI_Finalize()
 	return EXIT_SUCCESS;

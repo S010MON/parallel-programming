@@ -1,3 +1,10 @@
+# Contents
+
+1.	![Open MP](https://github.com/S010MON/parallel-programming/README.md#OpenMP)
+-	![Variable Scoping](https://github.com/S010MON/parallel-programming/README.md#variable-scoping)	
+-	![The Barier Construct]([https://github.com/S010MON/parallel-programming/README.md#thebarrierconstruct](https://github.com/S010MON/parallel-programming/README.md#the-barrier-construct))	
+2. 	![MPI](https://github.com/S010MON/parallel-programming/README.md#mpi)
+
 # OpenMP
 
 Breaks code into multiple threads
@@ -197,6 +204,8 @@ Sets a package size of n operations, where n is defined by OpenMP, and allocates
 #pragma omp ... schedule(guided)
 ```
 
+<br/>
+
 # MPI
 http://www.open-mpi.org/
 
@@ -221,15 +230,108 @@ int main(int argc, char* argv[])
 	return EXIT_SUCCESS;
 }
 ```
+## Data Types
+MPI Type     | C Type
+-------------|-----------------
+MPI_CHAR     | signed char
+MPI_INT      | signed int
+MPI_LONG     | signed long int
+MPI_UNSIGNED | unsigned int
+MPI_FLOAT    | float
+MPI_DOUBLE   | double
 
-## Process Handling
+## Predefined Communicators
+MPI communication always takes place within a communicator, a communicator a group is used to describe the participants in a communication "universe".  This is properly defined after `MPI_Init(...)` has been called
+```c
+MPI_COMM_WORLD //includes all of the started processes 
 
-## Message Handling
+MPI_COMM_SELF //includes only the process itself
+```
 
-## Data Handling
+### Size
+Number of processes within a group, can be determined using:
+```c
+int MPI_Comm_size(MPI_COMM_WORLD, &procCount);
+```
 
-## IO Handling
+### Rank
+Identifies processes within a group, can be determined using:
+```c
+int MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
+```
 
+## Point to Point Communication
+### Send
+```c
+int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+```
+- **buf**: starting address of the message
+- **count**: number of elements
+- **datatype**: type of each element
+- **dest**: rank of destination in communicator comm
+- **tag**: message identification
+- **comm**: communicator
 
+Example:
+```c
+MPI_Send(&message, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD);
+```
 
+### Recieve
+```c
+int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src , int tag, MPI_Comm comm, MPI_Status *status)
+```
+In addition `MPI_Recv` has:
+- **status**: envelope information (message information)
+```c
+MPI_Recv(message, length, MPI_INT, i, tagSend, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+```
 
+### Sources and Tags
+It is possible to receive messages from any other process and with any message tag by using `MPI_ANY_SOURCE` and `MPI_ANY_TAG`. Actual source and tag are included in the status variable.
+
+```c
+int src = status.MPI_SOURCE;
+int tag = status.MPI_TAG;
+MPI_Get_count(*status, mpi_datatype, *count)  // element count of data
+```
+
+## Blocking and Non-Blocking 
+### Blocking
+Holds the program until the action (read, write, send, recieve, etc.) has completed. For example, ordering a package and then waiting inside all day until the delivery arrives because there is nowhere to store your package. `MPI_Send` and `MPI_Recv` are both blocking functions, they hold up execution of the next line of code until the action is completed.
+ 
+### Non-blocking
+Frees the program to return and check whether the action ahs completed.  To continue the analogy, delivery to a pickup point to allow you to check whenever you line so you can do stuff with your day.
+
+To track communication requests an integer request handle is provided by the MPI system
+```c
+MPI_Request req;
+MPI_Issend(&message, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD, &req)
+```
+
+In non-blocking send-variants we need to check for the communication's completion either by waiting for the communication to be complete:
+```c
+int MPI_Wait(MPI_Request *req, MPI_Status *status)
+```
+or looping and testing over and over to see if the comminication is completed
+```c
+MPI_Test(&req,&flag,MPI_STATUS_IGNORE);
+```
+
+example:
+```c
+message = 42;
+MPI_Request req;
+MPI_Issend(&message, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD, &req);
+
+int flag = 0;
+while (1)
+{
+	MPI_Test(&req,&flag,MPI_STATUS_IGNORE);
+	if (1 == flag)
+		break;
+	printf("wait ...\n");
+	sleep(1);
+}
+printf("Message sent \n");
+```

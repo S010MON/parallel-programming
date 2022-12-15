@@ -18,30 +18,16 @@ int main(int argc, char* argv[])
 	
 	printf("Start[%d]/[%d] \n",procRank,procCount);
 	
-	int message = 1;
+	int message = -1;
 
 	if(procRank == 0)
 	{
-		MPI_Send(&message, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD);
-		printf("%i -> %i :(%i)\n", procRank, procRank+1, message);
-		MPI_Recv(&message, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		message = 42;
 	}
-	else if( procRank == procCount-1 )
-	{
-		int r = -1;
-		MPI_Recv(&r, 1, MPI_INT, procRank-1, tagSend, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		r++;
-		printf("%i -> %i :(%i)\n", procRank, 0, r);
-		MPI_Send(&r, 1, MPI_INT, 0, tagSend, MPI_COMM_WORLD);
-	}
-	else
-	{	
-		int r = -1;
-		MPI_Recv(&r, 1, MPI_INT, procRank-1, tagSend, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		r++;
-		printf("%i -> %i :(%i)\n", procRank, procRank+1, r);
-		MPI_Send(&r, 1, MPI_INT, procRank+1, tagSend, MPI_COMM_WORLD);
-	}	
+
+	// This line, broadcasts the message to all other processes, if removed, they become -1
+	MPI_Bcast(&message, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	printf("proc %d recv. bcast %d \n", procRank, message);
 
 	MPI_Finalize();
 

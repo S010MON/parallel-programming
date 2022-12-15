@@ -278,14 +278,51 @@ In addition `MPI_Recv` has:
 MPI_Recv(message, length, MPI_INT, i, tagSend, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 ```
 
+### Sources and Tags
+It is possible to receive messages from any other process and with any message tag by using `MPI_ANY_SOURCE` and `MPI_ANY_TAG`. Actual source and tag are included in the status variable.
 
+```c
+int src = status.MPI_SOURCE;
+int tag = status.MPI_TAG;
+MPI_Get_count(*status, mpi_datatype, *count)  // element count of data
+```
 
-## Message Handling
+## Blocking and Non-Blocking 
+### Blocking
+Holds the program until the action (read, write, send, recieve, etc.) has completed. For example, ordering a package and then waiting inside all day until the delivery arrives because there is nowhere to store your package. `MPI_Send` and `MPI_Recv` are both blocking functions, they hold up execution of the next line of code until the action is completed.
+ 
+### Non-blocking
+Frees the program to return and check whether the action ahs completed.  To continue the analogy, delivery to a pickup point to allow you to check whenever you line so you can do stuff with your day.
 
-## Data Handling
+To track communication requests an integer request handle is provided by the MPI system
+```c
+MPI_Request req;
+MPI_Issend(&message, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD, &req)
+```
 
-## IO Handling
+In non-blocking send-variants we need to check for the communication's completion either by waiting for the communication to be complete:
+```c
+int MPI_Wait(MPI_Request *req, MPI_Status *status)
+```
+or looping and testing over and over to see if the comminication is completed
+```c
+MPI_Test(&req,&flag,MPI_STATUS_IGNORE);
+```
 
+example:
+```c
+message = 42;
+MPI_Request req;
+MPI_Issend(&message, 1, MPI_INT, 1, tagSend, MPI_COMM_WORLD, &req);
 
-
-
+int flag = 0;
+while (1)
+{
+	MPI_Test(&req,&flag,MPI_STATUS_IGNORE);
+	if (1 == flag)
+		break;
+	printf("wait ...\n");
+	sleep(1);
+}
+printf("Message sent \n");
+```

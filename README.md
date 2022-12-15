@@ -197,5 +197,39 @@ Sets a package size of n operations, where n is defined by OpenMP, and allocates
 #pragma omp ... schedule(guided)
 ```
 
+# MPI
+http://www.open-mpi.org/
+
+## Hello World Example
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+/*
+* gcc -o hello hello.c
+* ./hello
+* mpiexec -np 3 ./hello
+*/
+int main(int argc, char* argv[])
+{
+	int MPI_Init(&argc, &argv)
+	MPI_Comm_size(MPI_COMM_WORLD,&procCount);
+	
+	printf("Start[%d]/[%d]: Hello World\n",procRank,procCount
+	
+	int MPI_Finalize()
+	return EXIT_SUCCESS;
+}
+```
+
+## Process Handling
+
+## Message Handling
+
+## Data Handling
+
+## IO Handling
+
+
 
 

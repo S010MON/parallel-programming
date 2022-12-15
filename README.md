@@ -1,3 +1,10 @@
+# Contents
+
+1.	![Open MP](https://github.com/S010MON/parallel-programming/README.md#OpenMP)
+-	![Variable Scoping](https://github.com/S010MON/parallel-programming/README.md#variable-scoping)	
+-	![The Barier Construct]([https://github.com/S010MON/parallel-programming/README.md#thebarrierconstruct](https://github.com/S010MON/parallel-programming/README.md#the-barrier-construct))	
+2. 	![MPI](https://github.com/S010MON/parallel-programming/README.md#mpi)
+
 # OpenMP
 
 Breaks code into multiple threads
@@ -196,6 +203,8 @@ Sets a package size of n operations, where n is defined by OpenMP, and allocates
 ```c
 #pragma omp ... schedule(guided)
 ```
+
+<br/>
 
 # MPI
 http://www.open-mpi.org/

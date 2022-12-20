@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	else if( procRank == 1)
 	{	
 		int r = -1;
-		while( r != 0 )
+		while( r <= 3 )
 		{
 			MPI_Recv(&r, 1, MPI_INT, 0, tagSend, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			r++;

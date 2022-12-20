@@ -412,9 +412,7 @@ The send call will only start when the destinantion is ready to recieve (like a 
 ### Asynchronous Communication
 The send can complete even if the recieve is not ready (like an SMS message). This is stored in a buffer of messages that the reciever can access when ready. In MPI this can be done with `MPI_Bsend`
 
-Mode        	|Standard    	|Synchronous    |Asyncronous (Buffered)
-----------------|---------------|---------------|----
-Blocking	|MPI_Send	|MPI_Ssend	|MPI_Bsend
-		|MPI_Recv	|		|
-Non-blocking	|MPI_Isend	|MPI_Issend	|MPI_Ibsend
-		|MPI_Irecv	|		|
+Mode        	|Standard    		|Synchronous    |Asyncronous (Buffered)
+----------------|-----------------------|---------------|-----------------------
+Blocking	|MPI_Send/MPI_Recv	|MPI_Ssend	|MPI_Bsend
+Non-blocking	|MPI_Isend/MPI_Irecv	|MPI_Issend	|MPI_Ibsend

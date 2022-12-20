@@ -108,7 +108,7 @@ min (least number),
 max (largest number)
 ```
 
-## Sychronisation
+## Synchronisation
 A Critical Region is executed by all threads, but by only one thread simultaneously (Mutual Exclusion).
 ```c
 #pragma omp critical (name)

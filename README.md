@@ -278,9 +278,8 @@ http://www.open-mpi.org/
 #include <stdlib.h>
 
 /*
-* gcc -o hello hello.c
-* ./hello
-* mpiexec -np 3 ./hello
+* mpicc -std=c99 hello.c -o hello
+* mpiexec -np 3 hello
 */
 int main(int argc, char* argv[])
 {

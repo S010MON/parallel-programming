@@ -1,10 +1,3 @@
-# Contents
-
-1.	![Open MP](https://github.com/S010MON/parallel-programming/README.md#OpenMP)
--	![Variable Scoping](https://github.com/S010MON/parallel-programming/README.md#variable-scoping)	
--	![The Barier Construct]([https://github.com/S010MON/parallel-programming/README.md#thebarrierconstruct](https://github.com/S010MON/parallel-programming/README.md#the-barrier-construct))	
-2. 	![MPI](https://github.com/S010MON/parallel-programming/README.md#mpi)
-
 # OpenMP
 
 Breaks code into multiple threads
@@ -115,7 +108,7 @@ min (least number),
 max (largest number)
 ```
 
-## Syncronisation
+## Synchronisation
 A Critical Region is executed by all threads, but by only one thread simultaneously (Mutual Exclusion).
 ```c
 #pragma omp critical (name)
@@ -191,11 +184,54 @@ Breaks the work between all the threads before they are started (default setting
 ```c
 #pragma omp ... schedule(static)
 ```
+ Below are examples taken from ![Jakas Corner](http://jakascorner.com/blog/2016/06/omp-for-scheduling.html) who has some great notes.
+```
+schedule(static):      
+****************                                                
+                ****************                                
+                                ****************                
+                                                ****************
+```
+```
+schedule(static, 4):   
+****            ****            ****            ****            
+    ****            ****            ****            ****        
+        ****            ****            ****            ****    
+            ****            ****            ****            ****
+```
+```
+schedule(static, 8):   
+********                        ********                        
+        ********                        ********                
+                ********                        ********        
+                        ********                        ********
+```
 
 ### Dynamic Scheduling
 Provides only one (by default) process to each thread, and once complete they request a new task.  This adds lots of communication overhead but allows processes to be scheduled very dynamically
 ```c
 #pragma omp ... schedule(dynamic)
+```
+```
+schedule(dynamic):     				same as (dyanmic, 1)
+*   ** **  * * *  *      *  *    **   *  *  * *       *  *   *  
+  *       *     *    * *     * *   *    *        * *   *    *   
+ *       *    *     * *   *   *     *  *       *  *  *  *  *   *
+   *  *     *    * *    *  *    *    *    ** *  *   *     *   * 
+```
+```
+schedule(dynamic, 4):  
+            ****                    ****                    ****
+****            ****    ****            ****        ****        
+    ****            ****    ****            ****        ****    
+        ****                    ****            ****            
+```
+```
+schedule(dynamic, 8):  
+                ********                                ********
+                        ********        ********                
+********                        ********        ********        
+        ********                                                
 ```
 
 ### Guided
@@ -203,7 +239,34 @@ Sets a package size of n operations, where n is defined by OpenMP, and allocates
 ```c
 #pragma omp ... schedule(guided)
 ```
-
+```
+schedule(guided):      
+                            *********                        *  
+                ************                     *******  ***   
+                                     *******                   *
+****************                            *****       **    * 
+```
+```
+schedule(guided, 2):   
+                ************                     ****     **    
+                                     *******         ***    **  
+                            *********                           
+****************                            *****       **    **
+```
+```
+schedule(guided, 4):   
+                                     *******                    
+                ************                     ****    ****   
+                            *********                           
+****************                            *****    ****    ***
+```
+```
+schedule(guided, 8):   
+                ************                 ********        ***
+****************                                                
+                                     ********                   
+                            *********                ********
+```
 <br/>
 
 # MPI
@@ -221,12 +284,16 @@ http://www.open-mpi.org/
 */
 int main(int argc, char* argv[])
 {
-	int MPI_Init(&argc, &argv)
-	MPI_Comm_size(MPI_COMM_WORLD,&procCount);
+	int procRank, procCount;
+	
+	MPI_Init(&argc, &argv);
+	
+	MPI_Comm_size(MPI_COMM_WORLD, &procCount);
+	MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
 	
 	printf("Start[%d]/[%d]: Hello World\n",procRank,procCount);
 	
-	int MPI_Finalize()
+	MPI_Finalize()
 	return EXIT_SUCCESS;
 }
 ```
@@ -335,3 +402,17 @@ while (1)
 }
 printf("Message sent \n");
 ```
+
+## Synchronous and Asynchronous (Buffered)
+### Synchronous Communication
+The send call will only start when the destinantion is ready to recieve (like a telephone call).  The send call will only complete after the message has been completely transmitted to the recieving process and it acknowledges the message.
+
+### Asynchronous Communication
+The send can complete even if the recieve is not ready (like an SMS message). This is stored in a buffer of messages that the reciever can access when ready. In MPI this can be done with `MPI_Bsend`
+
+Mode        	|Standard    		|Synchronous    |Asyncronous (Buffered)
+----------------|-----------------------|---------------|-----------------------
+Blocking	|MPI_Send/MPI_Recv	|MPI_Ssend	|MPI_Bsend
+Non-blocking	|MPI_Isend/MPI_Irecv	|MPI_Issend	|MPI_Ibsend
+
+The `MPI_Send` can be both synchronous and asynchronous depending on the implementation and message size. This is why `MPI_Ssend` can force synchronos and `MPI_Bsend` can force asynchronous. 

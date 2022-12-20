@@ -184,11 +184,54 @@ Breaks the work between all the threads before they are started (default setting
 ```c
 #pragma omp ... schedule(static)
 ```
+ Below are examples taken from ![Jakas Corner](http://jakascorner.com/blog/2016/06/omp-for-scheduling.html) who has some great notes.
+```
+schedule(static):      
+****************                                                
+                ****************                                
+                                ****************                
+                                                ****************
+```
+```
+schedule(static, 4):   
+****            ****            ****            ****            
+    ****            ****            ****            ****        
+        ****            ****            ****            ****    
+            ****            ****            ****            ****
+```
+```
+schedule(static, 8):   
+********                        ********                        
+        ********                        ********                
+                ********                        ********        
+                        ********                        ********
+```
 
 ### Dynamic Scheduling
 Provides only one (by default) process to each thread, and once complete they request a new task.  This adds lots of communication overhead but allows processes to be scheduled very dynamically
 ```c
 #pragma omp ... schedule(dynamic)
+```
+```
+schedule(dynamic):     				same as (dyanmic, 1)
+*   ** **  * * *  *      *  *    **   *  *  * *       *  *   *  
+  *       *     *    * *     * *   *    *        * *   *    *   
+ *       *    *     * *   *   *     *  *       *  *  *  *  *   *
+   *  *     *    * *    *  *    *    *    ** *  *   *     *   * 
+```
+```
+schedule(dynamic, 4):  
+            ****                    ****                    ****
+****            ****    ****            ****        ****        
+    ****            ****    ****            ****        ****    
+        ****                    ****            ****            
+```
+```
+schedule(dynamic, 8):  
+                ********                                ********
+                        ********        ********                
+********                        ********        ********        
+        ********                                                
 ```
 
 ### Guided
@@ -196,7 +239,36 @@ Sets a package size of n operations, where n is defined by OpenMP, and allocates
 ```c
 #pragma omp ... schedule(guided)
 ```
+```
+schedule(guided):      
+                            *********                        *  
+                ************                     *******  ***   
+                                     *******                   *
+****************                            *****       **    * 
+```
+```
+schedule(guided, 2):   
+                ************                     ****     **    
+                                     *******         ***    **  
+                            *********                           
+****************                            *****       **    **
+```
+```
+schedule(guided, 4):   
+                                     *******                    
+                ************                     ****    ****   
+                            *********                           
+****************                            *****    ****    ***
+```
+```
 
+
+schedule(guided, 8):   
+                ************                 ********        ***
+****************                                                
+                                     ********                   
+                            *********                ********
+```
 <br/>
 
 # MPI

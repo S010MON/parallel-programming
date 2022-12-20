@@ -214,7 +214,7 @@ http://www.open-mpi.org/
 */
 int main(int argc, char* argv[])
 {
-	int MPI_Init(&argc, &argv)
+	MPI_Init(&argc, &argv)
 	MPI_Comm_size(MPI_COMM_WORLD,&procCount);
 	
 	printf("Start[%d]/[%d]: Hello World\n",procRank,procCount);

@@ -416,3 +416,5 @@ Mode        	|Standard    		|Synchronous    |Asyncronous (Buffered)
 ----------------|-----------------------|---------------|-----------------------
 Blocking	|MPI_Send/MPI_Recv	|MPI_Ssend	|MPI_Bsend
 Non-blocking	|MPI_Isend/MPI_Irecv	|MPI_Issend	|MPI_Ibsend
+
+The `MPI_Send` can be both synchronous and asynchronous depending on the implementation and message size. This is why `MPI_Ssend` can force synchronos and `MPI_Bsend` can force asynchronous. 

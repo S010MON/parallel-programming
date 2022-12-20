@@ -214,12 +214,16 @@ http://www.open-mpi.org/
 */
 int main(int argc, char* argv[])
 {
-	MPI_Init(&argc, &argv)
-	MPI_Comm_size(MPI_COMM_WORLD,&procCount);
+	int procRank, procCount;
+	
+	MPI_Init(&argc, &argv);
+	
+	MPI_Comm_size(MPI_COMM_WORLD, &procCount);
+	MPI_Comm_rank(MPI_COMM_WORLD, &procRank);
 	
 	printf("Start[%d]/[%d]: Hello World\n",procRank,procCount);
 	
-	int MPI_Finalize()
+	MPI_Finalize()
 	return EXIT_SUCCESS;
 }
 ```

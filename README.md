@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
 	
 	printf("Start[%d]/[%d]: Hello World\n",procRank,procCount);
 	
-	MPI_Finalize()
+	MPI_Finalize();
 	return EXIT_SUCCESS;
 }
 ```
